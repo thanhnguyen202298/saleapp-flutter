@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'dart:math';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -102,20 +103,26 @@ class MyDrawer extends StatelessWidget {
       child: ListView(
         children: [
           DrawerHeader(
+            decoration: RectangleDecor("").build(),
             // decoration: CircleDecor("https://9mobi.vn/cf/images/2015/03/nkk/anh-dep-1.jpg").build(),
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
             margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-            child: CircleImage("", radial: 80,),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: CircleImage(
+                "",
+                radial: 60,
+                url: "https://9mobi.vn/cf/images/2015/03/nkk/anh-dep-1.jpg"
+                    "",
+              ),
+            )
           ),
           ListTile(
             title: Text("Bills"),
             onTap: () => {Navigator.pop(context)},
           ),
           ListTile(
-            title: CaptionText(
-              "Hover text example",
-              fontsize: 30,
-            ),
+            title: CaptionText("Hover text example"),
             onTap: () {
               Scaffold.of(this.context).showSnackBar(snackBar);
             },
@@ -125,14 +132,26 @@ class MyDrawer extends StatelessWidget {
     );
   }
 }
+class MenuBuider{
+  MenuBuider();
+  // final List<String>
+}
+class ImageLoad{
 
+  ImageProvider _checkUrlImage(String data){
+    if(data.contains("http://") || data.contains("https://")){
+      return NetworkImage(data);
+    }
+    return Image.asset(data).image;
+  }
+}
 class CaptionText extends StatelessWidget {
   CaptionText(this.data,
       {this.fontsize,
       this.color,
       this.bold,
       this.paddingBox = 0,
-      this.alignText = TextAlign.center})
+      this.alignText = TextAlign.start})
       : super();
   final String data;
   final double fontsize;
@@ -154,7 +173,8 @@ class CaptionText extends StatelessWidget {
     );
   }
 }
-class CircleDecor {
+
+class CircleDecor with ImageLoad {
   CircleDecor(this.url, {this.color}) : super();
   final String url;
   final Color color;
@@ -162,14 +182,28 @@ class CircleDecor {
   @override
   Decoration build() {
     return ShapeDecoration.fromBoxDecoration(BoxDecoration(
-            shape: BoxShape.circle,
-            color: this.color,
-            image: DecorationImage(image: NetworkImage(this.url))));
+        shape: BoxShape.circle,
+        color: this.color,
+        image: DecorationImage(image: _checkUrlImage(this.url))));
   }
 }
+class RectangleDecor with ImageLoad{
+  RectangleDecor(this.url, { this.round = 0, this.color = Colors.lightBlueAccent});
+  final String url;
+  final Color color;
+  final double round;
 
-class CircleImage extends StatelessWidget{
-  CircleImage(this.data, {this.radial,this.color, this.url=""}):super();
+  @override
+  Decoration build() {
+    return ShapeDecoration.fromBoxDecoration(BoxDecoration(
+        borderRadius: BorderRadius.circular(round),
+        shape: BoxShape.rectangle,
+        color: this.color,
+        image: DecorationImage(image: _checkUrlImage(this.url))));
+  }
+}
+class CircleImage extends StatelessWidget with  ImageLoad{
+  CircleImage(this.data, {this.radial, this.color, this.url = ""}) : super();
   final String data;
   final String url;
   final double radial;
@@ -179,14 +213,14 @@ class CircleImage extends StatelessWidget{
   Widget build(BuildContext context) {
     return Center(
         child: CircleAvatar(
-          child: CaptionText(
-            this.data,
-            fontsize: 20,
-            color: Colors.amber,
-          ),
-          radius: this.radial,
-          backgroundColor: this.color,
-          backgroundImage: NetworkImage(this.url),
-        ));
+      child: CaptionText(
+        this.data,
+        fontsize: 20,
+        color: Colors.amber,
+      ),
+      radius: this.radial,
+      backgroundColor: this.color,
+      backgroundImage: _checkUrlImage(this.url),
+    ));
   }
 }
