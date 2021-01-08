@@ -3,6 +3,8 @@ import 'dart:math';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:sale_app/Animation.dart';
 
 void main() {
   runApp(MyApp());
@@ -103,20 +105,22 @@ class MyDrawer extends StatelessWidget {
       child: ListView(
         children: [
           DrawerHeader(
-            decoration: RectangleDecor("").build(),
-            // decoration: CircleDecor("https://9mobi.vn/cf/images/2015/03/nkk/anh-dep-1.jpg").build(),
-            padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: CircleImage(
-                "",
-                radial: 60,
-                url: "https://9mobi.vn/cf/images/2015/03/nkk/anh-dep-1.jpg"
-                    "",
-              ),
-            )
-          ),
+              decoration: RectangleDecor("").build(),
+              // decoration: CircleDecor("https://9mobi.vn/cf/images/2015/03/nkk/anh-dep-1.jpg").build(),
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+              margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child:
+                    // Container(decoration: CircleDecor("https://9mobi.vn/cf/images/2015/03/nkk/anh-dep-1.jpg").build(),)
+
+                    CircleImage(
+                  "nguyen thanh",
+                  radial: 60,
+                  color: Color.fromRGBO(30, 100, 255, 1),
+                  url: "https://9mobi.vn/cf/images/2015/03/nkk/anh-dep-1.jpg",
+                ),
+              )),
           ListTile(
             title: Text("Bills"),
             onTap: () => {Navigator.pop(context)},
@@ -126,25 +130,34 @@ class MyDrawer extends StatelessWidget {
             onTap: () {
               Scaffold.of(this.context).showSnackBar(snackBar);
             },
+          ),
+          ListTile(
+            title: CaptionText("page 2"),
+            onTap: () {
+              Navigator.push(context, _createRoute());
+            },
           )
         ],
       ),
     );
   }
 }
-class MenuBuider{
-  MenuBuider();
-  // final List<String>
-}
-class ImageLoad{
 
-  ImageProvider _checkUrlImage(String data){
-    if(data.contains("http://") || data.contains("https://")){
+///view custom background, image, avatar
+class MenuBuider {
+  MenuBuider();
+// final List<String>
+}
+
+class ImageLoad {
+  ImageProvider _checkUrlImage(String data) {
+    if (data.contains("http://") || data.contains("https://")) {
       return NetworkImage(data);
     }
     return Image.asset(data).image;
   }
 }
+
 class CaptionText extends StatelessWidget {
   CaptionText(this.data,
       {this.fontsize,
@@ -187,8 +200,11 @@ class CircleDecor with ImageLoad {
         image: DecorationImage(image: _checkUrlImage(this.url))));
   }
 }
-class RectangleDecor with ImageLoad{
-  RectangleDecor(this.url, { this.round = 0, this.color = Colors.lightBlueAccent});
+
+class RectangleDecor with ImageLoad {
+  RectangleDecor(this.url,
+      {this.round = 0, this.color = Colors.lightBlueAccent});
+
   final String url;
   final Color color;
   final double round;
@@ -202,8 +218,10 @@ class RectangleDecor with ImageLoad{
         image: DecorationImage(image: _checkUrlImage(this.url))));
   }
 }
-class CircleImage extends StatelessWidget with  ImageLoad{
-  CircleImage(this.data, {this.radial, this.color, this.url = ""}) : super();
+
+class CircleImage extends StatelessWidget with ImageLoad {
+  CircleImage(this.data, {this.radial = 5, this.color, this.url = ""})
+      : super();
   final String data;
   final String url;
   final double radial;
@@ -222,5 +240,94 @@ class CircleImage extends StatelessWidget with  ImageLoad{
       backgroundColor: this.color,
       backgroundImage: _checkUrlImage(this.url),
     ));
+  }
+}
+
+//navigation & pages
+
+Route _createRoute() {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) =>
+        PhysicsCardDragDemo(),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return MyAnimation().start2EndAnimation(animation, child);
+    },
+  );
+}
+
+class Page2 extends StatelessWidget {
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Center(
+        child: Text('Page 2'),
+      ),
+    );
+  }
+}
+
+// draggable view
+class PhysicsCardDragDemo extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: DraggableCard(
+        child: FlutterLogo(
+          size: 128,
+        ),
+      ),
+    );
+  }
+}
+
+class DraggableCard extends StatefulWidget {
+  final Widget child;
+
+  DraggableCard({this.child});
+
+  @override
+  _DraggableCardState createState() => _DraggableCardState();
+}
+
+class _DraggableCardState extends State<DraggableCard>
+    with SingleTickerProviderStateMixin {
+  AnimationController _controller;
+  Alignment _dragAlignment = Alignment.center;
+
+  @override
+  void initState() {
+    _controller =
+        AnimationController(vsync: this, duration: Duration(seconds: 1));
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    return GestureDetector(
+      onPanDown: (details) {},
+      onPanUpdate: (detials) {
+        setState(() {
+
+          _dragAlignment += Alignment(detials.delta.dx / (size.width / 2),
+              detials.delta.dy / (size.height / 2));
+        });
+      },
+      onPanEnd: (detail) {},
+      child: Align(
+        alignment: _dragAlignment,
+        child: Card(
+          child:
+            widget.child,
+        ),
+      ),
+    );
   }
 }
