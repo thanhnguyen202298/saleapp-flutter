@@ -1,10 +1,10 @@
 import 'dart:ffi';
 import 'dart:math';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:sale_app/Animation.dart';
+import 'file:///F:/project_flutter/sale_app/lib/myAnimation/Animation.dart';
+import 'myAnimation/DragDemo2.dart';
 
 void main() {
   runApp(MyApp());
@@ -247,87 +247,9 @@ class CircleImage extends StatelessWidget with ImageLoad {
 
 Route _createRoute() {
   return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) =>
-        PhysicsCardDragDemo(),
+    pageBuilder: (context, animation, secondaryAnimation) => SecondScreen(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return MyAnimation().start2EndAnimation(animation, child);
     },
   );
-}
-
-class Page2 extends StatelessWidget {
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: Text('Page 2'),
-      ),
-    );
-  }
-}
-
-// draggable view
-class PhysicsCardDragDemo extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: DraggableCard(
-        child: FlutterLogo(
-          size: 128,
-        ),
-      ),
-    );
-  }
-}
-
-class DraggableCard extends StatefulWidget {
-  final Widget child;
-
-  DraggableCard({this.child});
-
-  @override
-  _DraggableCardState createState() => _DraggableCardState();
-}
-
-class _DraggableCardState extends State<DraggableCard>
-    with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  Alignment _dragAlignment = Alignment.center;
-
-  @override
-  void initState() {
-    _controller =
-        AnimationController(vsync: this, duration: Duration(seconds: 1));
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    return GestureDetector(
-      onPanDown: (details) {},
-      onPanUpdate: (detials) {
-        setState(() {
-
-          _dragAlignment += Alignment(detials.delta.dx / (size.width / 2),
-              detials.delta.dy / (size.height / 2));
-        });
-      },
-      onPanEnd: (detail) {},
-      child: Align(
-        alignment: _dragAlignment,
-        child: Card(
-          child:
-            widget.child,
-        ),
-      ),
-    );
-  }
 }

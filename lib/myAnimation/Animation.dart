@@ -1,4 +1,4 @@
-library InAppAnimationLib;
+
 import 'package:flutter/material.dart';
 class MyAnimation {
   SlideTransition getAnimation(animation, child) {
