@@ -1,5 +1,5 @@
 # sale_app
-
+Custom view Widget practice
 A new Flutter application.
 
 ## Getting Started
