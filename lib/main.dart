@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'file:///F:/project_flutter/sale_app/lib/myAnimation/Animation.dart';
+import 'myAnimation/Animation.dart';
 import 'myAnimation/DragDemo2.dart';
 
 void main() {
@@ -20,6 +20,9 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
+
+
+
         home: Scaffold(
           body: MyHomePage(title: 'Home page'),
         ));

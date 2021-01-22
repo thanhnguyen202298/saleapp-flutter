@@ -5,9 +5,8 @@ import 'package:flutter/rendering.dart';
 
 // Created by Nguyen Trung Thanh on 1/15/2021.
 // Copyright (c) 2021 FUVI jsc. All rights reserved.
-class OrientView {}
 
-class MyApp extends StatelessWidget {
+class OrientView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appTitle = 'Orientation Demo';
