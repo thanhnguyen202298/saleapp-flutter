@@ -5,10 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'myAnimation/Animation.dart';
 import 'myAnimation/DragDemo2.dart';
+import 'bloc/streamexample.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(CustomerAppWidget());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.

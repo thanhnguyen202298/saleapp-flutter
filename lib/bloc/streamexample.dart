@@ -33,8 +33,9 @@ class Customer {
   }
 
   operator ==(other) =>
-      (other is Customer) && (_firstName == other._firstName) &&
-          (_lastName == other._lastName);
+      (other is Customer) &&
+      (_firstName == other._firstName) &&
+      (_lastName == other._lastName);
 
   int get hasCode => _firstName.hashCode ^ _lastName.hashCode;
 }
@@ -51,18 +52,18 @@ class Bloc {
     _downActionStreamController.stream.listen(_handleDown);
   }
 
-  List<Customer> initCustomerList(){
+  List<Customer> initCustomerList() {
     _customerList = [
-      Customer("Fred","Smith"),
-      Customer("Brian","Johnson"),
-      Customer("James","McGirl"),
-      Customer("John","Brown")
+      Customer("Fred", "Smith"),
+      Customer("Brian", "Johnson"),
+      Customer("James", "McGirl"),
+      Customer("John", "Brown")
     ];
     updateUpDownButton();
     return _customerList;
   }
 
-  void dispose(){
+  void dispose() {
     _upActionStreamController.close();
     _downActionStreamController.close();
   }
@@ -88,8 +89,9 @@ class Bloc {
   }
 
   void updateUpDownButton() {
-    for (int idx = 0, lastIdx = _customerList.length - 1; idx <
-        lastIdx; idx++) {
+    for (int idx = 0, lastIdx = _customerList.length - 1;
+        idx < lastIdx;
+        idx++) {
       Customer customer = _customerList[idx];
       customer.upButton = (idx > 0);
       customer.downButton = idx < lastIdx;
@@ -97,4 +99,131 @@ class Bloc {
   }
 
   Stream<List<Customer>> get customerListStream => _customerListSubject.stream;
+
+  Stream<String> get messageStream => _messageSubject.stream;
+
+  Sink<Customer> get upAction => _upActionStreamController.sink;
+
+  Sink<Customer> get downAction => _downActionStreamController.sink;
+}
+
+class BlocProvider extends InheritedWidget {
+  final Bloc bloc;
+
+  BlocProvider({Key key, @required this.bloc, Widget child})
+      : super(key: key, child: child);
+
+  @override
+  bool updateShouldNotify(InheritedWidget oldWidget) => true;
+
+  static Bloc of(BuildContext context) =>
+      (context.inheritFromWidgetOfExactType(BlocProvider) as BlocProvider).bloc;
+}
+
+class CustomerWidget extends StatelessWidget {
+  final Customer _customer;
+
+  CustomerWidget(this._customer);
+
+  @override
+  Widget build(BuildContext context) {
+    final bloc = BlocProvider.of(context);
+    Text text = Text(_customer.name,
+        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold));
+    IconButton upbutton = IconButton(
+        icon: Icon(
+          Icons.arrow_drop_up,
+          color: Colors.blue,
+        ),
+        onPressed: () {
+          bloc.upAction.add(_customer);
+        });
+    IconButton downButton = IconButton(
+        icon: Icon(Icons.arrow_drop_down, color: Colors.blue),
+        onPressed: () {
+          bloc.downAction.add(_customer);
+        });
+
+    List<Widget> children = [];
+    children.add(Expanded(
+      child: Padding(
+        padding: EdgeInsets.only(left: 20.0),
+        child: text,
+      ),
+    ));
+
+    if (_customer.upButton) children.add(upbutton);
+    if (_customer.downButton) children.add(downButton);
+    return Padding(
+      padding: EdgeInsets.all(6.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8.0),
+        child: Container(
+          decoration: BoxDecoration(color: Colors.cyan[80]),
+          child: Row(
+            children: children,
+            mainAxisAlignment: MainAxisAlignment.start,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CustomerAppWidget extends StatelessWidget {
+  final Bloc _bloc = Bloc();
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Bloc demo',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: BlocProvider(
+        bloc: _bloc,
+        child: CustomerListWidget(
+          title: 'flutter',
+          messageStream: _bloc.messageStream,
+        ),
+      ),
+    );
+  }
+}
+
+class CustomerListWidget extends StatelessWidget {
+  CustomerListWidget({Key key, this.title, Stream<String> this.messageStream})
+      : super(key: key) {
+    this.messageStream.listen((event) {
+      _scaffoldKey.currentState.showSnackBar(SnackBar(
+        content: Text(event),
+        duration: Duration(seconds: 1),
+      ));
+    });
+  }
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final String title;
+  final Stream<String> messageStream;
+
+  @override
+  Widget build(BuildContext context) {
+    final bloc = BlocProvider.of(context);
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(
+        title: Text(title),
+      ),
+      body: StreamBuilder<List<Customer>>(
+        stream: bloc.customerListStream,
+        initialData: bloc.initCustomerList(),
+        builder: (context, snapshot) {
+          List<Widget> customerWidgets =
+              snapshot.data.map((e) => CustomerWidget(e)).toList();
+          return ListView(
+            padding: const EdgeInsets.all(10.0),
+            children: customerWidgets,
+          );
+        },
+      ),
+    );
+  }
 }
