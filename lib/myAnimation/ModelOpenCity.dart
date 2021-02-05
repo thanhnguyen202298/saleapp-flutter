@@ -29,26 +29,52 @@ class Southwest {
 class CityInfo {
   String documentation = null;
 
-  List<License> licenses = null;
-
+  String thanks = null;
+  int totalResults = null;
   Rate rate = null;
-
-  List<Result> results = null;
 
   Status status = null;
 
   StayInformed stayInformed = null;
 
-  String thanks = null;
-
   Timestamp timestamp = null;
 
-  int totalResults = null;
+  List<License> licenses = null;
+  List<Result> results = null;
+
+  CityInfo.fromJson(Map<String, dynamic> json){
+    documentation = json['documentation'];
+    thanks = json['thanks'];
+    totalResults = json['totalResults'];
+    rate = Rate(json['rate']);
+    status = Status(json['status']);
+    stayInformed = StayInformed(json['stayInformed']);
+    timestamp = Timestamp(json['timestamp']);
+
+    int n = json['licenses'].length;
+    licenses = [];
+    for(int i =0; i < n ; i++){
+      License ls = License(json['licenses'][i]);
+      licenses.add(ls);
+    }
+
+    n = json['results'].length;
+    results = [];
+    for(int i =0; i < n ; i++){
+      Result ls = Result(json['results'][i]);
+      results.add(ls);
+    }
+  }
+
 }
 class License {
   String name = null;
 
   String url = null;
+  License(json){
+    name = json['name'];
+    url = json['url'];
+  }
 }
 
 class Rate {
@@ -57,6 +83,12 @@ class Rate {
   int remaining = null;
 
   int reset = null;
+
+  Rate(json){
+    limit = json['limit'];
+    remaining = json['remaining'];
+    reset = json['reset'];
+  }
 }
 
 class Components {
@@ -122,20 +154,40 @@ class Result {
   String formatted = null;
 
   Geometry geometry = null;
+
+  Result(json){
+    bounds = json['bounds'];
+    components = json['components'];
+    confidence = json['confidence'];
+    formatted = json['formatted'];
+    geometry = json['geometry'];
+  }
 }
 class Status {
   int code = null;
 
   String message = null;
+  Status(json){
+    code = json['code'];
+    message = json['message'];
+  }
 }
 class Timestamp {
   String createdHttp = null;
 
   int createdUnix = null;
+  Timestamp(json){
+    createdHttp = json['createdHttp'];
+    createdUnix = json['createdUnix'];
+  }
 }
 class StayInformed {
 
   String blog = null;
 
   String twitter = null;
+  StayInformed(json){
+    blog = json['blog'];
+    twitter = json['twitter'];
+  }
 }
