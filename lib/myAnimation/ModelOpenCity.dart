@@ -4,26 +4,21 @@
  * victo202298@gmail.com
  */
 class Bounds {
-  Northeast northeast = null;
-
-  Southwest southwest = null;
+  Location northeast = null;
+  Location southwest = null;
+  Bounds(json){
+    northeast = Location(json['northeast']);
+    southwest = Location(json['southwest']);
+  }
 }
 
-class Northeast {
+class Location {
   double lat = null;
-
   double lng = null;
-}
-class Geometry {
-  double lat = null;
-
-  double lng = null;
-}
-class Southwest {
-
-  double lat = null;
-
-  double lng = null;
+  Location(json){
+    lat= json['lat'];
+    lng = json['lng'];
+  }
 }
 
 class CityInfo {
@@ -141,26 +136,76 @@ class Components {
   String roadType = null;
 
   String region = null;
+
+  Components(json){
+
+    iSO31661Alpha2 = json['iSO31661Alpha2'];
+
+    iSO31661Alpha3 = json['iSO31661Alpha3'];
+
+    category = json['category'];
+
+    type = json['type'];
+
+    city = json['city'];
+
+    cityDistrict = json['cityDistrict'];
+
+    continent = json['continent'];
+
+    country = json['country'];
+
+
+    countryCode = json['countryCode'];
+
+    hamlet = json['hamlet'];
+
+    state = json['state'];
+
+    stateCode = json['stateCode'];
+
+    county = json['county'];
+
+    postcode = json['postcode'];
+
+    quarter = json['quarter'];
+
+    town = json['town'];
+
+    residential = json['residential'];
+
+    stateDistrict = json['stateDistrict'];
+
+    village = json['village'];
+
+    municipality = json['municipality'];
+
+    neighbourhood = json['neighbourhood'];
+
+    road = json['road'];
+
+    roadType = json['roadType'];
+
+    region = json['region'];
+  }
 }
 
 class Result {
 
-  Bounds bounds = null;
-
-  Components components = null;
-
   int confidence = null;
-
   String formatted = null;
 
-  Geometry geometry = null;
+  Bounds bounds = null;
+  Components components = null;
+  Location geometry = null;
 
   Result(json){
-    bounds = json['bounds'];
-    components = json['components'];
     confidence = json['confidence'];
     formatted = json['formatted'];
-    geometry = json['geometry'];
+
+    bounds = Bounds(json['bounds']);
+    components = Components(json['components']);
+    geometry = Location(json['geometry']);
   }
 }
 class Status {

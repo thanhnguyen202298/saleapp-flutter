@@ -4,6 +4,8 @@
  * victo202298@gmail.com
  */
 import 'dart:convert';
+import 'package:sale_app/myAnimation/ModelOpenCity.dart';
+
 import 'ModelOpenWeather.dart';
 import 'package:http/http.dart';
 
@@ -30,7 +32,7 @@ class CityReposity {
     Response response;
     response = await client.get("$baseUrlCity");
     if (response.statusCode == 200) {
-      return WeatherInfo.fromJson(json.decode(response.body));
+      return CityInfo.fromJson(json.decode(response.body));
     } else {
       throw Exception("No data response");
     }
