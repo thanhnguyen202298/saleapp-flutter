@@ -28,9 +28,9 @@ class CityReposity {
   final baseUrlCity =
       DataProvider.OPEN_CAGE_URL + DataProvider.QueryCity + DataProvider.key;
 
-  Future fetWeather() async {
+  Future fetchCity(String cityname) async {
     Response response;
-    response = await client.get("$baseUrlCity");
+    response = await client.get("$baseUrlCity&q=$cityname");
     if (response.statusCode == 200) {
       return CityInfo.fromJson(json.decode(response.body));
     } else {
@@ -45,14 +45,23 @@ class WeatherReposity {
       DataProvider.QueryWeather +
       DataProvider.appid;
 
-  Future fetWeather(double lat, double lon, String exclude) async {
+  Future fetchWeather(double lat, double lon, String exclude) async {
     Response response;
     response =
-        await client.get("$baseWeather&lat=$lat&lon=$lon&exclude=$exclude");
+    await client.get("$baseWeather&lat=$lat&lon=$lon&exclude=$exclude");
     if (response.statusCode == 200) {
       return WeatherInfo.fromJson(json.decode(response.body));
     } else {
       throw Exception("No data response");
     }
   }
+}
+
+class Reposity {
+  final CityReposity cityProvider = CityReposity();
+  final WeatherReposity weatherProvider = WeatherReposity();
+
+  Future<CityInfo> fetchCity(name) => cityProvider.fetchCity(name);
+  Future<WeatherInfo> fetchWeather(lat,lon,exclude) => weatherProvider.fetchWeather(lat, lon, exclude);
+
 }
