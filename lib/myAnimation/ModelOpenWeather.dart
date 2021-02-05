@@ -190,7 +190,7 @@ class WeatherInfo {
 
   List<Daily> daily;
 
-  WeatherInfo(weatherInfo) {
+  WeatherInfo.fromJson(Map<String,dynamic> weatherInfo) {
     lat = weatherInfo['lat'];
     lon = weatherInfo['lon'];
     timezone = weatherInfo['timezone'];
