@@ -6,6 +6,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:sale_app/myAnimation/DataProvider.dart';
+import 'package:sale_app/myAnimation/ModelOpenCity.dart';
 
 class Customer {
   String _firstName;
@@ -42,17 +44,28 @@ class Customer {
 
 class Bloc {
   List<Customer> _customerList = [];
+  List<Result> citylist = [];
+  Reposity resposity;
   final _upActionStreamController = StreamController<Customer>();
   final _downActionStreamController = StreamController<Customer>();
   final _customerListSubject = BehaviorSubject<List<Customer>>();
+  final _citylistSubject = PublishSubject<List<Result>>();
   final _messageSubject = BehaviorSubject<String>();
 
   Bloc() {
+    resposity = Reposity();
     _upActionStreamController.stream.listen(_handleUp);
     _downActionStreamController.stream.listen(_handleDown);
   }
 
+  loadDataCity(String name) async {
+    CityInfo cityInfo = await resposity.fetchCity(name);
+    citylist = cityInfo.results;
+    _citylistSubject.add(citylist);
+  }
+
   List<Customer> initCustomerList() {
+    loadDataCity("saigon");
     _customerList = [
       Customer("Fred", "Smith"),
       Customer("Brian", "Johnson"),
@@ -69,6 +82,7 @@ class Bloc {
   }
 
   void _handleUp(Customer customer) {
+    loadDataCity("saigon");
     swap(customer, true);
     updateUpDownButton();
     _customerListSubject.add(_customerList);
@@ -99,6 +113,8 @@ class Bloc {
   }
 
   Stream<List<Customer>> get customerListStream => _customerListSubject.stream;
+
+  Stream<List<Result>> get cityListStream => _citylistSubject.stream;
 
   Stream<String> get messageStream => _messageSubject.stream;
 
@@ -208,22 +224,30 @@ class CustomerListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of(context);
     return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: StreamBuilder<List<Customer>>(
-        stream: bloc.customerListStream,
-        initialData: bloc.initCustomerList(),
-        builder: (context, snapshot) {
-          List<Widget> customerWidgets =
-              snapshot.data.map((e) => CustomerWidget(e)).toList();
-          return ListView(
-            padding: const EdgeInsets.all(10.0),
-            children: customerWidgets,
-          );
-        },
-      ),
-    );
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Text(title),
+        ),
+        body: GestureDetector(
+          child: Padding(
+            padding: EdgeInsets.all(20.0),
+              child:
+            StreamBuilder<List<Result>>(
+              stream: bloc.cityListStream,
+              initialData: [],
+              builder: (context, snapshot) {
+                List<Widget> customerWidgets = snapshot.data
+                    .map((e) =>
+                        CustomerWidget(Customer(e.formatted, e.formatted)))
+                    .toList();
+                return ListView(
+                  padding: const EdgeInsets.all(10.0),
+                  children: customerWidgets,
+                );
+              },
+            )),
+          onTap: () => bloc.loadDataCity("saigon"),
+        ));
   }
 }
+

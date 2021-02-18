@@ -28,13 +28,13 @@ class CityReposity {
   final baseUrlCity =
       DataProvider.OPEN_CAGE_URL + DataProvider.QueryCity + DataProvider.key;
 
-  Future fetchCity(String cityname) async {
+  Future<CityInfo> fetchCity(String cityname) async {
     Response response;
     response = await client.get("$baseUrlCity&q=$cityname");
     if (response.statusCode == 200) {
       return CityInfo.fromJson(json.decode(response.body));
     } else {
-      throw Exception("No data response");
+      throw Exception("No data response. ${response.body}");
     }
   }
 }
@@ -52,7 +52,7 @@ class WeatherReposity {
     if (response.statusCode == 200) {
       return WeatherInfo.fromJson(json.decode(response.body));
     } else {
-      throw Exception("No data response");
+      throw Exception("No data response. ${response.body}");
     }
   }
 }

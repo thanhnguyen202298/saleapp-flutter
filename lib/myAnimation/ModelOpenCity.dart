@@ -40,10 +40,10 @@ class CityInfo {
   CityInfo.fromJson(Map<String, dynamic> json){
     documentation = json['documentation'];
     thanks = json['thanks'];
-    totalResults = json['totalResults'];
+    totalResults = json['total_results'];
     rate = Rate(json['rate']);
     status = Status(json['status']);
-    stayInformed = StayInformed(json['stayInformed']);
+    stayInformed = StayInformed(json['stay_informed']);
     timestamp = Timestamp(json['timestamp']);
 
     int n = json['licenses'].length;
