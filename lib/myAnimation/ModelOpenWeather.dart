@@ -35,21 +35,21 @@ class Current {
   List<Weather> weather;
 
   Current.fromJson(Map<String, dynamic> jsonMap) {
-    dt = jsonMap['dt'];
+    dt = double.parse(jsonMap['dt'].toString());
     sunrise = jsonMap['sunrise'];
     sunset = jsonMap['sunset'];
-    temp = jsonMap['temp'];
-    feelsLike = jsonMap['feelsLike'];
+    temp = double.parse(jsonMap['temp'].toString());
+    feelsLike = jsonMap['feels_like'];
     pressure = jsonMap['pressure'];
     humidity = jsonMap['humidity'];
-    dewPoint = jsonMap['dewPoint'];
+    dewPoint = jsonMap['dew_point'];
     uvi = jsonMap['uvi'];
     clouds = jsonMap['clouds'];
 
     visibility = jsonMap['visibility'];
-    windSpeed = jsonMap['windSpeed'];
+    windSpeed = jsonMap['wind_speed'];
 
-    windDeg = jsonMap['windDeg'];
+    windDeg = jsonMap['wind_deg'];
     weather = [];
     int n = jsonMap['weather'].length;
     for (int i = 0; i < n; i++) {
@@ -95,21 +95,21 @@ class Daily {
   int visibility;
 
   Daily(json) {
-    dt = json['dt'];
+    dt = double.parse(json['dt'].toString());;
     date = json['date'];
     sunrise = json['sunrise'];
     sunset = json['sunset'];
     temp = Temp(json['temp']);
-    feelsLike = FeelsLike(json['feelsLike']);
+    feelsLike = FeelsLike(json['feels_like']);
     pressure = json['pressure'];
     humidity = json['humidity'];
-    dewPoint = json['dewPoint'];
-    windSpeed = json['windSpeed'];
-    windDeg = json['windDeg'];
+    dewPoint = json['dew_point'];
+    windSpeed = json['wind_speed'];
+    windDeg = json['wind_deg'];
     clouds = json['clouds'];
-    pop = json['pop'];
+    pop = double.parse(json['pop'].toString());;
     rain = json['rain'];
-    uvi = json['uvi'];
+    uvi = double.parse(json['uvi'].toString());;
     visibility = json['visibility'];
     weather = [];
     int n = json['weather'].length;
@@ -194,7 +194,7 @@ class WeatherInfo {
     lat = weatherInfo['lat'];
     lon = weatherInfo['lon'];
     timezone = weatherInfo['timezone'];
-    timezoneOffset = weatherInfo['timezoneOffset'];
+    timezoneOffset = weatherInfo['timezone_offset'];
     current = Current.fromJson(weatherInfo['current']);
 
     daily = [];

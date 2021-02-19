@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sale_app/myAnimation/DataProvider.dart';
 import 'package:sale_app/myAnimation/ModelOpenCity.dart';
+import 'package:sale_app/myAnimation/ModelOpenWeather.dart';
 
 class Customer {
   String _firstName;
@@ -45,11 +46,13 @@ class Customer {
 class Bloc {
   List<Customer> _customerList = [];
   List<Result> citylist = [];
+  WeatherInfo cityWeather;
   Reposity resposity;
   final _upActionStreamController = StreamController<Customer>();
   final _downActionStreamController = StreamController<Customer>();
   final _customerListSubject = BehaviorSubject<List<Customer>>();
   final _citylistSubject = PublishSubject<List<Result>>();
+  final _weatherlistSubject = PublishSubject<WeatherInfo>();
   final _messageSubject = BehaviorSubject<String>();
 
   Bloc() {
@@ -62,6 +65,11 @@ class Bloc {
     CityInfo cityInfo = await resposity.fetchCity(name);
     citylist = cityInfo.results;
     _citylistSubject.add(citylist);
+  }
+
+  loadWeather(String lat, String lon, String exclude) async {
+    cityWeather = await resposity.fetchWeather(lat, lon, exclude);
+    _weatherlistSubject.add(cityWeather);
   }
 
   List<Customer> initCustomerList() {
@@ -115,6 +123,8 @@ class Bloc {
   Stream<List<Customer>> get customerListStream => _customerListSubject.stream;
 
   Stream<List<Result>> get cityListStream => _citylistSubject.stream;
+
+  Stream<WeatherInfo> get cityWeatherStream => _weatherlistSubject.stream;
 
   Stream<String> get messageStream => _messageSubject.stream;
 
@@ -230,24 +240,23 @@ class CustomerListWidget extends StatelessWidget {
         ),
         body: GestureDetector(
           child: Padding(
-            padding: EdgeInsets.all(20.0),
-              child:
-            StreamBuilder<List<Result>>(
-              stream: bloc.cityListStream,
-              initialData: [],
-              builder: (context, snapshot) {
-                List<Widget> customerWidgets = snapshot.data
-                    .map((e) =>
-                        CustomerWidget(Customer(e.formatted, e.formatted)))
-                    .toList();
-                return ListView(
-                  padding: const EdgeInsets.all(10.0),
-                  children: customerWidgets,
-                );
-              },
-            )),
-          onTap: () => bloc.loadDataCity("saigon"),
+              padding: EdgeInsets.all(20.0),
+              child: StreamBuilder<WeatherInfo>(
+                stream: bloc.cityWeatherStream,
+                initialData: null,
+                builder: (context, snapshot) {
+                  if (snapshot.data == null) return Text("No data");
+                  List<Widget> customerWidgets = snapshot.data.daily
+                      .map((e) => CustomerWidget(
+                          Customer(e.dt.toString(), e.temp.day.toString())))
+                      .toList();
+                  return ListView(
+                    padding: const EdgeInsets.all(10.0),
+                    children: customerWidgets,
+                  );
+                },
+              )),
+          onTap: () => bloc.loadWeather("10.7715512","106.6983801","minute"),
         ));
   }
 }
-

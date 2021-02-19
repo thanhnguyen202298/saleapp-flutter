@@ -45,7 +45,7 @@ class WeatherReposity {
       DataProvider.QueryWeather +
       DataProvider.appid;
 
-  Future fetchWeather(double lat, double lon, String exclude) async {
+  Future<WeatherInfo> fetchWeather(lat, lon, String exclude) async {
     Response response;
     response =
     await client.get("$baseWeather&lat=$lat&lon=$lon&exclude=$exclude");
